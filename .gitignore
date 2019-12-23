@@ -102,3 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
+
+#Test client html files
+*.html
+
+#SQL lite file
+*.sqlite
+
+#Redis dump file
+*.rdb
