@@ -1,6 +1,6 @@
 // BUSINESS LOGICS
 const dao = require('../../dao')
-const {io} = require('../../config/')
+var jwt = require('jsonwebtoken');
 
 
 /**
@@ -8,31 +8,58 @@ const {io} = require('../../config/')
  * @param {String} projectName
  * @param {String} eventName
  */
-const createProject = (projectName, eventName) => {
+exports.createProject = (projectName, eventName) => {
+    var { io } = require('../../config')
 
-    return dao.createProject({projectName, eventName})
-    .then(() => {
-        var channel = io.of(projectName)
-          
-        channel.on('connection',  (client) => {
-            let event = eventName;
-            client.on(event, (data) => {
-                console.log(data)
-                client.emit(event, data)
-            })
-            client.emit('token', {token: client.id})
+    return dao.getProject(projectName)
+        .then((result) => {
+             if(result.length) {
+                 return {"error": "Project name already taken"}
+             }
+            return dao.createProject({ projectName, eventName })
+                .then(() => {
+                    var channel = io.of(projectName)
+                    var token = jwt.sign({"projectName": projectName}, 'Inv091')
+                    channel.on('connection', (client) => {
+                        let event = eventName;
+                        client.on(event, (data) => {
+                            console.log(data)
+                            client.emit(event, data)
+                        })
+                        client.emit('token', { token: client.id })
+                    })
+                    return {  "auth_token": token };
+
+                })
         })
-        return;
 
-    })
-    .catch((err) => {
-        console.error(err)
-         throw err
-    })
+        .catch((err) => {
+            console.error(err)
+            throw err
+        })
 
 }
 
-module.exports = {
-    createProject
+
+
+/**
+ * Send messsage to specific namespace client with socketId.
+ * @param {String} projectName
+ * @param {String} user_id
+ * @param {String} eventName
+ * @param {any} data 
+ */
+exports.sendMessage = (projectName, user_id,eventName, data) => {
+    var { io } = require('../../config')
+
+     return  new Promise ((resolve, reject) => {
+
+         var nsp = io.of(projectName)
+          nsp.to(user_id).emit(eventName, data)
+
+           resolve({})
+
+       })
+      
 }
 

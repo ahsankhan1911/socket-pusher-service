@@ -1,16 +1,17 @@
 require('dotenv').config()
+const {server, io} = require('./config')
 const fs = require('fs')
 const dao = require('./dao.js')
-const {server, io} = require('./config/')
 
 if (!fs.existsSync(('database.sqlite'))) {
     fs.writeFileSync('database.sqlite', '')
 
 }
+
+
 server.listen(3000)
     .on('listening', () => {
         console.log("Socket server listening on 3000")
-
         return dao.createProjecTable()
         .then((result) => {
             return dao.getAllProjects()
@@ -25,7 +26,10 @@ server.listen(3000)
                             console.log(data)
                             client.emit(event, data)
                         })
-                        client.emit('token', { token: client.id })
+                        client.on('user_id', (data) => {
+                            console.log(data)
+                            client.join(data.user_id)
+                        })
                     })
                 }
                 return;
