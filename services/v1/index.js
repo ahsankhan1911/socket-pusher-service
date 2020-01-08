@@ -1,14 +1,15 @@
 // BUSINESS LOGICS
 const dao = require('../../dao')
 var jwt = require('jsonwebtoken');
+var Response = require('../../responceModel')
 
 
 /**
  * Create a new project and socket namespace.
  * @param {String} projectName
- * @param {String} eventName
+ * @param {String} hostIp
  */
-exports.createProject = (projectName, eventName) => {
+exports.createProject = (projectName, hostIp) => {
     var { io } = require('../../config')
 
     return dao.getProject(projectName)
@@ -16,17 +17,27 @@ exports.createProject = (projectName, eventName) => {
              if(result.length) {
                  return {"error": "Project name already taken"}
              }
-            return dao.createProject({ projectName, eventName })
+            return dao.createProject({ projectName, hostIp })
                 .then(() => {
                     var channel = io.of(projectName)
-                    var token = jwt.sign({"projectName": projectName}, 'Inv091')
+                    var token = jwt.sign({"projectName": projectName, "hostIp": hostIp}, process.env.JWT_SECRET_KEY)
                     channel.on('connection', (client) => {
-                        let event = eventName;
-                        client.on(event, (data) => {
+                        // let event = eventName;
+                        client.on("data", (data) => {
                             console.log(data)
-                            client.emit(event, data)
+                            let response = new Response(1, data, 'Notification Message !')
+                            channel.emit("data", response)
                         })
-                        client.emit('token', { token: client.id })
+
+                        client.on("notification", (data) => {
+                            console.log(data)
+                            let response = new Response(1, data, 'Data Message!')
+                            channel.emit("notification", response)
+                        })
+                        client.on('user_id', (data) => {
+                            console.log(data)
+                            client.join(data.user_id)
+                        })
                     })
                     return {  "auth_token": token };
 
@@ -55,7 +66,9 @@ exports.sendMessage = (projectName, user_id,eventName, data) => {
      return  new Promise ((resolve, reject) => {
 
          var nsp = io.of(projectName)
-          nsp.to(user_id).emit(eventName, data)
+         let response = new Response(1, data, 'Message Received !')
+         
+          nsp.to(user_id).emit(eventName, response)
 
            resolve({})
 

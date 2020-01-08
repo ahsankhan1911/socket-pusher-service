@@ -7,13 +7,13 @@ class AppDao {
 
   async createProjecTable() {
     let db = await dbPromise
-    return db.run('CREATE TABLE IF NOT EXISTS project (eventName text,projectName text)')
+    return db.run('CREATE TABLE IF NOT EXISTS project (projectName text, hostIp text)')
 
   }
 
   async  createProject(data) {
     let db = await dbPromise
-    return db.run(`INSERT INTO project ('eventName','projectName') VALUES('${data.eventName}','${data.projectName}')`)
+    return db.run(`INSERT INTO project ('projectName', 'hostIp') VALUES('${data.projectName}', '${data.hostIp}')`)
   }
 
   async getAllProjects() {
@@ -24,6 +24,11 @@ class AppDao {
   async getProject(projectName) {
     let db = await dbPromise
     return db.all(`SELECT projectName FROM project WHERE projectName="${projectName}"`)
+  }
+
+  async getAllowedOrigins () {
+    let db = await dbPromise
+    return db.all(`SELECT hostIp from project`)
   }
 
 }

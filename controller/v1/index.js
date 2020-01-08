@@ -1,11 +1,11 @@
 const services = require('../../services/v1/')
 
 exports.createProject = (request, response) => {
+console.log(request.body)
 
+    let { projectName , hostIp} = request.body
 
-    let { eventName, projectName } = request.body
-
-    services.createProject(projectName, eventName)
+    services.createProject(projectName, hostIp)
         .then((result) => {
             if(result.error) {
                return response.status(400).send({
