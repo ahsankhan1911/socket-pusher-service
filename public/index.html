@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<style>
+input[type=text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+</style>
+<body>
+
+<h3>Create your Socket Project</h3>
+
+<div>
+  <form action="/v1/create-project" method="POST">
+    <label for="lname">Project Name</label>
+    <input type="text" id="eventName" name="projectName" placeholder="Project name.." required>
+
+    <label for="lname">Domain / IP (for cors purpose)</label>
+    <input type="text" id="hostIp" name="hostIp" placeholder="Domain / IP.." required>
+  
+    <input type="submit" value="Submit">
+  </form>
+</div>
+
+</body>
+</html>

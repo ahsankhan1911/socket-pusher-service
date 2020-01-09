@@ -104,7 +104,7 @@ dist
 .tern-port
 
 #Test client html files
-*.html
+
 
 #SQL lite file
 *.sqlite
