@@ -3,6 +3,7 @@ const { server, io } = require('./config')
 const fs = require('fs')
 const dao = require('./dao.js')
 const Response = require('./responceModel')
+const PORT = process.env.PORT || 3000
 
 if (!fs.existsSync(('database.sqlite'))) {
     fs.writeFileSync('database.sqlite', '')
@@ -10,9 +11,9 @@ if (!fs.existsSync(('database.sqlite'))) {
 }
 
 
-server.listen(3000)
+server.listen(PORT)
     .on('listening', () => {
-        console.log("Socket server listening on 3000")
+        console.log("Socket server listening on " +  PORT)
         return dao.createProjecTable()
             .then((result) => {
                 return dao.getAllProjects()
