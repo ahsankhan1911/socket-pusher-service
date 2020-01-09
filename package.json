@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "A generalize socket server for realtime messaging",
   "main": "index.js",
+  "engines": {
+    "node": "10.16.0",
+    "npm": "6.9.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "Ahsan Khan",
   "license": "ISC",
